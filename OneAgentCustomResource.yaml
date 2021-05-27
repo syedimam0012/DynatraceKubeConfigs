@@ -1,0 +1,50 @@
+apiVersion: dynatrace.com/v1alpha1
+kind: OneAgent
+metadata:
+  name: oneagent
+  namespace: dynatrace
+spec:
+  apiUrl: https://{ENVIRONMENT_ID}.live.dynatrace.com/api
+  # disable certificate validation checks for installer download and API communication
+  skipCertCheck: false
+  # name of secret holding `apiToken` and `paasToken`
+  # if unset, name of custom resource is used
+  tokens: "oneagent"
+  # node selector to control the selection of nodes (optional)
+  nodeSelector: {}
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  image: ""
+  # arguments to oneagent installer (optional)
+  # https://www.dynatrace.com/support/help/shortlink/oneagent-docker#limitations
+  args:
+  - APP_LOG_CONTENT_ACCESS=1
+  # environment variables for oneagent (optional)
+  env:
+    - name: DT_PROXY
+      value: "PROXY_URL"
+    - name: http_proxy
+      value: "PROXY_URL"
+    - name: https_proxy
+      value: "PROXY_URL"
+    - name: HTTP_PROXY
+      value: "PROXY_URL"
+    - name: HTTPS_PROXY
+      value: "PROXY_URL"
+  # resource settings for oneagent pods (optional)
+  # consumption of oneagent heavily depends on the workload to monitor
+  # please adjust values accordingly
+  #resources:
+  #  requests:
+  #    cpu: 100m
+  #    memory: 512Mi
+  #  limits:
+  #    cpu: 300m
+  #    memory: 1.5Gi
+  # priority class to assign to oneagent pods (optional)
+  # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+  #priorityClassName: PRIORITYCLASS
+  # disables automatic restarts of oneagent pods in case a new version is available
+  #disableAgentUpdate: false
